@@ -12,5 +12,5 @@ def calc_md5_hash_of_remote_file(url, email_to=''):
     remove_file(filename)
     if email_to:
         send_result_to_email(email_to, str(url), hash_result)
-    return hash_result
+    return hash_result, url
 
