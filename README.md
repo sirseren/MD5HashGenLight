@@ -2,6 +2,7 @@
 MD5 Hash Generator
 
 ### Installation
+Before installation please configure [config.py](https://github.com/sirseren/MD5HashGenLight/blob/master/config.py)
 ```
 $ python3.6 -mvenv env
 $ source env/bin/activate
