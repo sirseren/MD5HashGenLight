@@ -11,8 +11,11 @@ $ pip install -r requirements.txt
 ```
 $ redis-server
 ```
-
-Starting the celery worker:
+### Starting the celery worker:
 ```
 $ celery -A tasks worker -l info -P eventlet
+```
+### Starting the server:
+```
+$ python -m server.py
 ```
