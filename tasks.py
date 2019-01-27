@@ -1,5 +1,6 @@
 from celery import Celery
 from utils import *
+from config import CELERY_BACKEND_URL, CELERY_BROKER_URL
 
 app = Celery('tasks', broker=CELERY_BROKER_URL, backend=CELERY_BACKEND_URL)
 
