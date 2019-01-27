@@ -29,7 +29,7 @@ def get_method_process():
     result = calc_md5_hash_of_remote_file.AsyncResult(task_id)
     state = result.state
     if state == 'SUCCESS':
-        task_status = '{"md5":"'+result.get()+'"}'
+        task_status = '{"md5":"'+result.get()[0]+'", ' + '"status":"done", ' + '"url":"'+result.get()[1]+'"}'
     elif state == "PENDING":
         return 'task does not exist',404
     elif state == "STARTED":
