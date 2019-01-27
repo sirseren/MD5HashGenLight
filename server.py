@@ -40,4 +40,4 @@ def get_method_process():
 
 
 
-#app.run(debug=False, port=PORT)
+app.run(debug=False, port=PORT)
