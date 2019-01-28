@@ -1,5 +1,5 @@
 from celery import Celery
-from utils import *
+from utils import download_file, gen_md5_hash, remove_file, send_result_to_email
 from config import CELERY_BACKEND_URL, CELERY_BROKER_URL
 
 app = Celery('tasks', broker=CELERY_BROKER_URL, backend=CELERY_BACKEND_URL)
