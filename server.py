@@ -45,7 +45,7 @@ def check():
     elif result.state == "FAILURE":
         return '{"status":"failure"}'
     elif result.state == "STARTED":
-        task_status = '{"status":"running"}'
+        return '{"status":"running"}'
 
     try:
         hash_value = result.get()[0]
