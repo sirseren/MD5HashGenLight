@@ -1,6 +1,10 @@
+import os
+
 from flask import Flask, jsonify, request
 from tasks import calc_md5_hash_of_remote_file
-from config import PORT
+from config import PORT, DOWNLOAD_PATH
+from celery import states
+
 
 
 #init Flask app
@@ -11,33 +15,55 @@ app.config.update(
 )
 
 
-#routing POST /submit
-
 @app.route('/submit', methods=['POST'])
-def post_metod_process():
+def submit():
+    """ Adds a new task to the hash generation queue
+    Returns:
+        str: Task's id
+    """
     url = request.form.get('url')
     email = request.form.get('email')
-    id = calc_md5_hash_of_remote_file.delay(url, email)
-    return str('{"id":"' + str(id) + '"}')
+    task_id = calc_md5_hash_of_remote_file.delay(url, email)
+    return jsonify({'id': str(task_id)}), 201
 
-
-#routing GET /check
 
 @app.route('/check', methods=['GET'])
-def get_method_process():
+def check():
+    """ Check state of task
+    Returns:
+        str: result of processed task
+    """
     task_id = request.args.get('id')
+
+    if not task_id:
+        return jsonify({'status': states.FAILURE, 'error': 'Bad task id'}), 404
+
     result = calc_md5_hash_of_remote_file.AsyncResult(task_id)
-    state = result.state
-    if state == 'SUCCESS':
-        task_status = '{"md5":"'+result.get()[0]+'", ' + '"status":"done", ' + '"url":"'+result.get()[1]+'"}'
-    elif state == "PENDING":
-        return 'task does not exist',404
-    elif state == "STARTED":
+
+    if result.state == "PENDING":
+        return 'task does not exist', 404
+    elif result.state == "FAILURE":
+        return '{"status":"failure"}'
+    elif result.state == "STARTED":
         task_status = '{"status":"running"}'
-    elif state == "FAILURE":
-        task_status = '{"status":"failure"}'
-    return task_status
+
+    try:
+        hash_value = result.get()[0]
+        url = result.get()[1]
+
+    except ValueError as e:
+        return {'status': states.FAILURE, 'error': str(e)}, 400
+
+    if result.state == 'SUCCESS':
+        return jsonify({'md5': hash_value, 'status': states.SUCCESS, 'url': url})
 
 
+def validate_settings():
+    """ Validate settings values """
+    if not os.path.isdir(os.path.abspath(DOWNLOAD_PATH)):
+        raise ValueError('DOWNLOAD_PATH must be valid path to existing directory')
 
-app.run(debug=False, port=PORT)
+
+if __name__ == '__main__':
+    validate_settings()
+    app.run(debug=False, port=PORT)
