@@ -11,7 +11,7 @@ def download_file(url):
     response = requests.get(url)
     filename = url[url.rfind("/") + 1:]
     print("filename = ", filename)
-    if (os.path.isfile(DOWNLOAD_PATH +filename)):
+    if (os.path.isfile(DOWNLOAD_PATH +filename)): 
         print("filename old = ", filename)
         str_timestamp = str(time.time()).replace(".", "_")
         filename = filename.replace(".", str_timestamp+'.')
@@ -25,9 +25,9 @@ def download_file(url):
 
 
 def gen_md5_hash(filename):
-    with open(filename, 'rb') as f:
+    with open(filename, 'rb') as f:         
         hash_result = hashlib.md5()
-        for buf in iter(partial(f.read, 128), b''):
+        for buf in iter(partial(f.read, 128), b''):   #redo using chunks
             hash_result.update(buf)
     return hash_result.hexdigest()
 
